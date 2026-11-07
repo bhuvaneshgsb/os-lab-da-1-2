@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Patient Monitoring Dashboard
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+        }
+
+        header p {
+            margin-top: 8px;
+            font-size: 15px;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            width: 92%;
+            max-width: 1200px;
+            margin: 25px auto;
+        }
+
+        /* =========================
+           VITAL CARDS
+        ========================= */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow:
+                0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .value {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .unit {
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* =========================
+           STATUS SECTION
+        ========================= */
+
+        .status-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .status-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+
+            box-shadow:
+                0 3px 10px rgba(0,0,0,0.08);
+
+            transition: 0.3s ease;
+        }
+
+        .status-card h2 {
+            margin-bottom: 15px;
+        }
+
+        .status {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .info {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        /* =========================
+           STATUS COLORS
+        ========================= */
+
+        .status-normal {
+            color: #16a34a;
+        }
+
+        .status-low {
+            color: #ca8a04;
+        }
+
+        .status-moderate {
+            color: #ea580c;
+        }
+
+        .status-high {
+            color: #dc2626;
+        }
+
+        .status-critical {
+            color: #991b1b;
+        }
+
+        /* =========================
+           STATUS CARD BORDERS
+        ========================= */
+
+        .status-card.status-normal-card {
+            border-left:
+                6px solid #16a34a;
+        }
+
+        .status-card.status-low-card {
+            border-left:
+                6px solid #ca8a04;
+        }
+
+        .status-card.status-moderate-card {
+            border-left:
+                6px solid #ea580c;
+        }
+
+        .status-card.status-high-card {
+            border-left:
+                6px solid #dc2626;
+        }
+
+        .status-card.status-critical-card {
+            border-left:
+                6px solid #991b1b;
+        }
+
+        /* =========================
+           HISTORY / CHART
+        ========================= */
+
+        .history {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+
+            box-shadow:
+                0 3px 10px rgba(0,0,0,0.08);
+
+            margin-bottom: 25px;
+        }
+
+        .history h2 {
+            margin-bottom: 15px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #f0f2f5;
+        }
+
+        /* =========================
+           ALERTS
+        ========================= */
+
+        .alert {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+
+            background: #fff1f2;
+
+            border-left:
+                5px solid #dc2626;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .cards {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .status-section {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        /* =========================================================
+   RISK SUMMARY
+========================================================= */
+
+.risk-summary {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+
+    margin-top: 20px;
+
+}
+
+.risk-box {
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+    border: 2px solid transparent;
+
+}
+
+.risk-box .risk-label {
+
+    display: block;
+
+    font-weight: bold;
+
+    font-size: 16px;
+
+    margin-bottom: 8px;
+
+}
+
+.risk-box strong {
+
+    display: block;
+
+    font-size: 30px;
+
+    margin-bottom: 5px;
+
+}
+
+.risk-box small {
+
+    color: #666;
+
+}
+
+/* LOW */
+
+.normal-box {
+
+    background: #ecfdf5;
+
+    border-color: #16a34a;
+
+}
+
+.normal-box .risk-label {
+
+    color: #16a34a;
+
+}
+
+/* MODERATE */
+
+.moderate-box {
+
+    background: #fff7ed;
+
+    border-color: #f97316;
+
+}
+
+.moderate-box .risk-label {
+
+    color: #ea580c;
+
+}
+
+/* HIGH */
+
+.high-box {
+
+    background: #fef2f2;
+
+    border-color: #dc2626;
+
+}
+
+.high-box .risk-label {
+
+    color: #dc2626;
+
+}
+
+/* CRITICAL */
+
+.critical-box {
+
+    background: #fee2e2;
+
+    border-color: #991b1b;
+
+}
+
+.critical-box .risk-label {
+
+    color: #991b1b;
+
+}
+
+/* Summary information */
+
+.risk-summary-info {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 20px;
+
+    padding: 15px;
+
+    background: #f8fafc;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+}
+
+#highestRisk,
+#currentRisk {
+
+    font-weight: bold;
+
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+
+    .risk-summary {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .risk-summary {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .risk-summary-info {
+
+        flex-direction: column;
+
+        gap: 10px;
+
+    }
+
+}
+
+/* =========================================================
+   DYNAMIC SEVERITY CARD
+========================================================= */
+
+#severityCard {
+    transition: all 0.3s ease;
+    border-left: 5px solid #999;
+}
+
+#severityCard.severity-normal {
+    border-left-color: #16a34a;
+    background: #ecfdf5;
+}
+
+#severityCard.severity-low {
+    border-left-color: #eab308;
+    background: #fefce8;
+}
+
+#severityCard.severity-moderate {
+    border-left-color: #f97316;
+    background: #fff7ed;
+}
+
+#severityCard.severity-high {
+    border-left-color: #dc2626;
+    background: #fef2f2;
+}
+
+#severityCard.severity-critical {
+    border-left-color: #991b1b;
+    background: #fee2e2;
+}
+
+#severity.severity-normal {
+    color: #16a34a;
+}
+
+#severity.severity-low {
+    color: #ca8a04;
+}
+
+#severity.severity-moderate {
+    color: #ea580c;
+}
+
+#severity.severity-high {
+    color: #dc2626;
+}
+
+#severity.severity-critical {
+    color: #991b1b;
+}
+
+#predictionCard {
+    transition: all 0.3s ease;
+    border-left: 5px solid #999;
+}
+
+#predictionCard.status-normal-card {
+    border-left-color: #16a34a;
+    background: #ecfdf5;
+}
+
+#predictionCard.status-low-card {
+    border-left-color: #eab308;
+    background: #fefce8;
+}
+
+#predictionCard.status-moderate-card {
+    border-left-color: #f97316;
+    background: #fff7ed;
+}
+
+#predictionCard.status-high-card {
+    border-left-color: #dc2626;
+    background: #fef2f2;
+}
+
+#predictionCard.status-critical-card {
+    border-left-color: #991b1b;
+    background: #fee2e2;
+}
+
+    </style>
+
+    <!-- Chart.js -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>
+        Predictive Severity-Aware RTOS
+    </h1>
+
+    <p>
+        Patient Monitoring System Dashboard
+    </p>
+
+</header>
+
+<div class="container">
+
+    <!-- =====================================================
+         CURRENT VITAL SIGNS
+    ====================================================== -->
+
+    <div class="cards">
+
+        <div class="card">
+
+            <h3>
+                Heart Rate
+            </h3>
+
+            <div
+                class="value"
+                id="heartRate"
+            >
+                --
+            </div>
+
+            <span class="unit">
+                BPM
+            </span>
+
+        </div>
+
+        <div class="card">
+
+            <h3>
+                SpO2
+            </h3>
+
+            <div
+                class="value"
+                id="spo2"
+            >
+                --
+            </div>
+
+            <span class="unit">
+                %
+            </span>
+
+        </div>
+
+        <div class="card">
+
+            <h3>
+                Temperature
+            </h3>
+
+            <div
+                class="value"
+                id="temperature"
+            >
+                --
+            </div>
+
+            <span class="unit">
+                °C
+            </span>
+
+        </div>
+
+        <div class="card">
+
+            <h3>
+                RTOS Priority
+            </h3>
+
+            <div
+                class="value"
+                id="priority"
+            >
+                --
+            </div>
+
+            <span class="unit">
+                Current Priority
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         SEVERITY AND PREDICTION
+    ====================================================== -->
+
+    <div class="status-section">
+
+        <!-- CURRENT SEVERITY -->
+
+        <div
+            class="status-card"
+            id="severityCard"
+        >
+
+            <h2>
+                Current Severity
+            </h2>
+
+            <div
+                class="status"
+                id="severity"
+            >
+                --
+            </div>
+
+            <div class="info">
+
+                Sampling Interval:
+
+                <strong id="sampling">
+                    --
+                </strong>
+
+                ms
+
+            </div>
+
+        </div>
+
+        <!-- DETERIORATION PREDICTION -->
+
+        <div
+            class="status-card"
+            id="predictionCard"
+        >
+
+            <h2>
+                Deterioration Prediction
+            </h2>
+
+            <div
+                class="status"
+                id="prediction"
+            >
+                --
+            </div>
+
+            <div class="info">
+                Predictive risk calculated from patient vital signs.
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         LIVE VITAL SIGN GRAPH
+    ====================================================== -->
+
+    <div class="history">
+
+        <h2>
+            Live Vital Sign Trends
+        </h2>
+
+        <div class="chart-container">
+
+            <canvas id="vitalChart"></canvas>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         SEVERITY & RISK TREND
+    ====================================================== -->
+
+    <div class="history">
+
+        <h2>
+            Severity & Risk Trend
+        </h2>
+
+        <div class="chart-container">
+
+            <canvas id="riskChart"></canvas>
+
+        </div>
+
+    </div>
+
+    <!-- Risk Summary -->
+
+<div class="history">
+
+    <h2>Risk Summary</h2>
+
+    <div class="risk-summary">
+
+        <div class="risk-box normal-box">
+            <span class="risk-label">LOW</span>
+            <strong id="lowCount">0</strong>
+            <small>Readings</small>
+        </div>
+
+        <div class="risk-box moderate-box">
+            <span class="risk-label">MODERATE</span>
+            <strong id="moderateCount">0</strong>
+            <small>Readings</small>
+        </div>
+
+        <div class="risk-box high-box">
+            <span class="risk-label">HIGH</span>
+            <strong id="highCount">0</strong>
+            <small>Readings</small>
+        </div>
+
+        <div class="risk-box critical-box">
+            <span class="risk-label">CRITICAL</span>
+            <strong id="criticalCount">0</strong>
+            <small>Readings</small>
+        </div>
+
+    </div>
+
+    <div class="risk-summary-info">
+
+        <div>
+            <strong>Highest Risk:</strong>
+            <span id="highestRisk">--</span>
+        </div>
+
+        <div>
+            <strong>Current Risk:</strong>
+            <span id="currentRisk">--</span>
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- =====================================================
+         RECENT VITAL READINGS
+    ====================================================== -->
+
+    <div class="history">
+
+        <h2>
+            Recent Vital Readings
+        </h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Time
+                    </th>
+
+                    <th>
+                        Heart Rate
+                    </th>
+
+                    <th>
+                        SpO2
+                    </th>
+
+                    <th>
+                        Temperature
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="historyTable">
+
+                <tr>
+
+                    <td colspan="4">
+                        Loading...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- =====================================================
+         EMERGENCY ALERTS
+    ====================================================== -->
+
+    <div class="history">
+
+        <h2>
+            Emergency Alerts
+        </h2>
+
+        <div id="alerts">
+            Loading...
+        </div>
+
+    </div>
+
+</div>
+
+<div class="footer">
+
+    Predictive Severity-Aware RTOS Patient Monitoring System
+
+</div>
+
+<script>
+
+/* =========================================================
+   GLOBAL CHART VARIABLES
+========================================================= */
+
+let vitalChart = null;
+let riskChart = null;
+
+/* =========================================================
+   UPDATE SEVERITY DISPLAY
+========================================================= */
+
+function updateSeverityDisplay(severity) {
+
+    if (severity) {
+        severity = String(severity).replace(/\\s+RISK$/i, "").trim();
+    }
+
+    const severityElement =
+        document.getElementById("severity");
+
+    const severityCard =
+        document.getElementById("severityCard");
+
+    if (!severityElement) return;
+
+    severityElement.classList.remove(
+        "status-normal",
+        "status-low",
+        "status-moderate",
+        "status-high",
+        "status-critical"
+    );
+
+    if (severityCard) {
+
+        severityCard.classList.remove(
+            "status-normal-card",
+            "status-low-card",
+            "status-moderate-card",
+            "status-high-card",
+            "status-critical-card"
+        );
+
+    }
+
+    if (!severity) {
+
+        severityElement.textContent = "--";
+
+        return;
+
+    }
+
+    const level =
+        severity.toString().toUpperCase();
+
+    if (level === "NORMAL") {
+
+        severityElement.classList.add(
+            "status-normal"
+        );
+
+        if (severityCard) {
+            severityCard.classList.add(
+                "status-normal-card"
+            );
+        }
+
+    }
+
+    else if (level === "LOW") {
+
+        severityElement.classList.add(
+            "status-low"
+        );
+
+        if (severityCard) {
+            severityCard.classList.add(
+                "status-low-card"
+            );
+        }
+
+    }
+
+    else if (level === "MODERATE") {
+
+        severityElement.classList.add(
+            "status-moderate"
+        );
+
+        if (severityCard) {
+            severityCard.classList.add(
+                "status-moderate-card"
+            );
+        }
+
+    }
+
+    else if (level === "HIGH") {
+
+        severityElement.classList.add(
+            "status-high"
+        );
+
+        if (severityCard) {
+            severityCard.classList.add(
+                "status-high-card"
+            );
+        }
+
+    }
+
+    else if (level === "CRITICAL") {
+
+        severityElement.classList.add(
+            "status-critical"
+        );
+
+        if (severityCard) {
+            severityCard.classList.add(
+                "status-critical-card"
+            );
+        }
+
+    }
+
+    severityElement.textContent =
+        severity;
+
+}
+
+/* =========================================================
+   UPDATE PREDICTION DISPLAY
+========================================================= */
+
+function updatePredictionDisplay(prediction) {
+
+    const predictionElement =
+        document.getElementById("prediction");
+
+    const predictionCard =
+        document.getElementById("predictionCard");
+
+    if (!predictionElement) return;
+
+    predictionElement.classList.remove(
+        "status-normal",
+        "status-low",
+        "status-moderate",
+        "status-high",
+        "status-critical"
+    );
+
+    if (predictionCard) {
+
+        predictionCard.classList.remove(
+            "status-normal-card",
+            "status-low-card",
+            "status-moderate-card",
+            "status-high-card",
+            "status-critical-card"
+        );
+
+    }
+
+    if (!prediction) {
+
+        predictionElement.textContent =
+            "--";
+
+        return;
+
+    }
+
+    const level =
+        prediction.toString().toUpperCase();
+
+    if (level.includes("CRITICAL")) {
+
+        predictionElement.classList.add(
+            "status-critical"
+        );
+
+        if (predictionCard) {
+            predictionCard.classList.add(
+                "status-critical-card"
+            );
+        }
+
+    }
+
+    else if (level.includes("HIGH")) {
+
+        predictionElement.classList.add(
+            "status-high"
+        );
+
+        if (predictionCard) {
+            predictionCard.classList.add(
+                "status-high-card"
+            );
+        }
+
+    }
+
+    else if (level.includes("MODERATE")) {
+
+        predictionElement.classList.add(
+            "status-moderate"
+        );
+
+        if (predictionCard) {
+            predictionCard.classList.add(
+                "status-moderate-card"
+            );
+        }
+
+    }
+
+    else if (level.includes("LOW")) {
+
+        predictionElement.classList.add(
+            "status-low"
+        );
+
+        if (predictionCard) {
+            predictionCard.classList.add(
+                "status-low-card"
+            );
+        }
+
+    }
+
+    else if (level.includes("NORMAL")) {
+
+        predictionElement.classList.add(
+            "status-normal"
+        );
+
+        if (predictionCard) {
+            predictionCard.classList.add(
+                "status-normal-card"
+            );
+        }
+
+    }
+
+    predictionElement.textContent =
+        prediction;
+
+}
+
+/* =========================================================
+   LOAD LATEST PATIENT DATA
+========================================================= */
+async function loadLatestData() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/latest?t=" + Date.now()
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Latest API returned " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        /* ---------- VITALS ---------- */
+
+        if (data.vitals) {
+
+            const heartRate =
+                document.getElementById(
+                    "heartRate"
+                );
+
+            const spo2 =
+                document.getElementById(
+                    "spo2"
+                );
+
+            const temperature =
+                document.getElementById(
+                    "temperature"
+                );
+
+            if (heartRate) {
+                heartRate.textContent =
+                    data.vitals.heart_rate ?? "--";
+            }
+
+            if (spo2) {
+                spo2.textContent =
+                    data.vitals.spo2 ?? "--";
+            }
+
+            if (temperature) {
+                temperature.textContent =
+                    data.vitals.temperature ?? "--";
+            }
+
+        }
+
+        /* ---------- SEVERITY ---------- */
+
+        if (data.severity) {
+
+            updateSeverityDisplay(
+                data.severity.severity
+            );
+
+        }
+
+        /* ---------- PREDICTION ---------- */
+
+        if (data.prediction) {
+
+            updatePredictionDisplay(
+                data.prediction.risk_level
+            );
+
+        }
+
+        /* ---------- RTOS SCHEDULER ---------- */
+
+        if (data.scheduler) {
+
+            const priority =
+                document.getElementById(
+                    "priority"
+                );
+
+            const sampling =
+                document.getElementById(
+                    "sampling"
+                );
+
+            if (priority) {
+
+                priority.textContent =
+                    data.scheduler.priority ?? "--";
+
+            }
+
+            if (sampling) {
+
+                sampling.textContent =
+                    data.scheduler.sampling_interval_ms
+                    ?? "--";
+
+            }
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error loading latest data:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   LOAD VITAL HISTORY TABLE
+========================================================= */
+
+async function loadHistory() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/history?t=" + Date.now()
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "History API returned " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        const table =
+            document.getElementById(
+                "historyTable"
+            );
+
+        if (!table) return;
+
+        table.innerHTML = "";
+
+        if (!Array.isArray(data) ||
+            data.length === 0) {
+
+            table.innerHTML =
+                "<tr>" +
+                "<td colspan='4'>" +
+                "No vital readings available." +
+                "</td>" +
+                "</tr>";
+
+            return;
+
+        }
+
+        data.forEach(row => {
+
+            const tr =
+                document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${row.timestamp ?? "--"}</td>
+                <td>${row.heart_rate ?? "--"}</td>
+                <td>${row.spo2 ?? "--"}</td>
+                <td>${row.temperature ?? "--"}</td>
+            `;
+
+            table.appendChild(tr);
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error loading history:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   LOAD EMERGENCY ALERTS
+========================================================= */
+
+async function loadAlerts() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/alerts?t=" + Date.now()
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Alerts API returned " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        const container =
+            document.getElementById(
+                "alerts"
+            );
+
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        if (!Array.isArray(data) ||
+            data.length === 0) {
+
+            container.innerHTML =
+                "<p>No emergency alerts recorded.</p>";
+
+            return;
+
+        }
+
+        data.forEach(alert => {
+
+            const div =
+                document.createElement("div");
+
+            div.className =
+                "alert";
+
+            div.innerHTML = `
+                <strong>
+                    ${alert.severity ?? "ALERT"}
+                </strong>
+                — ${alert.message ?? ""}
+                <br>
+                <small>
+                    ${alert.timestamp ?? ""}
+                </small>
+            `;
+
+            container.appendChild(div);
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error loading alerts:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   LIVE VITAL SIGN TREND
+========================================================= */
+
+async function loadVitalChart() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/history?t=" + Date.now()
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Vital chart API returned " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        if (!Array.isArray(data) ||
+            data.length === 0) {
+
+            return;
+
+        }
+
+        /*
+         * API returns newest first.
+         * Reverse for oldest -> newest.
+         */
+
+        const readings =
+            [...data].reverse();
+
+        const labels =
+            readings.map(
+                row => row.timestamp
+            );
+
+        const heartRates =
+            readings.map(
+                row => row.heart_rate
+            );
+
+        const spo2Values =
+            readings.map(
+                row => row.spo2
+            );
+
+        const temperatures =
+            readings.map(
+                row => row.temperature
+            );
+
+        const canvas =
+            document.getElementById(
+                "vitalChart"
+            );
+
+        if (!canvas) {
+
+            console.warn(
+                "vitalChart canvas not found."
+            );
+
+            return;
+
+        }
+
+        const ctx =
+            canvas.getContext("2d");
+
+        /*
+         * Create chart only once.
+         */
+
+        if (!vitalChart) {
+
+            vitalChart =
+                new Chart(ctx, {
+
+                    type: "line",
+
+                    data: {
+
+                        labels: labels,
+
+                        datasets: [
+
+                            {
+                                label:
+                                    "Heart Rate (BPM)",
+
+                                data:
+                                    heartRates,
+
+                                borderWidth: 3,
+
+                                tension: 0.3,
+
+                                fill: false,
+
+                                pointRadius: 4
+
+                            },
+
+                            {
+                                label:
+                                    "SpO2 (%)",
+
+                                data:
+                                    spo2Values,
+
+                                borderWidth: 3,
+
+                                tension: 0.3,
+
+                                fill: false,
+
+                                pointRadius: 4
+
+                            },
+
+                            {
+                                label:
+                                    "Temperature (°C)",
+
+                                data:
+                                    temperatures,
+
+                                borderWidth: 3,
+
+                                tension: 0.3,
+
+                                fill: false,
+
+                                pointRadius: 4
+
+                            }
+
+                        ]
+
+                    },
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        animation: false,
+
+                        scales: {
+
+                            x: {
+
+                                title: {
+
+                                    display: true,
+
+                                    text: "Time"
+
+                                }
+
+                            },
+
+                            y: {
+
+                                title: {
+
+                                    display: true,
+
+                                    text: "Vital Value"
+
+                                }
+
+                            }
+
+                        },
+
+                        plugins: {
+
+                            legend: {
+
+                                display: true
+
+                            }
+
+                        }
+
+                    }
+
+                });
+
+        }
+
+        /*
+         * Update existing chart.
+         */
+
+        else {
+
+            vitalChart.data.labels =
+                labels;
+
+            vitalChart.data.datasets[0].data =
+                heartRates;
+
+            vitalChart.data.datasets[1].data =
+                spo2Values;
+
+            vitalChart.data.datasets[2].data =
+                temperatures;
+
+            vitalChart.update("none");
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error loading vital chart:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   SEVERITY & RISK TREND
+========================================================= */
+
+async function loadRiskChart() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/predictions?t=" + Date.now()
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Prediction API returned " +
+                response.status
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        if (!Array.isArray(data) ||
+            data.length === 0) {
+
+            return;
+
+        }
+
+        /*
+         * API gives newest first.
+         * Reverse for oldest -> newest.
+         */
+
+        const readings =
+            [...data].reverse();
+
+        const labels =
+            readings.map(
+                row => row.timestamp
+            );
+
+        /*
+         * Risk values:
+         *
+         * LOW       = 1
+         * MODERATE  = 2
+         * HIGH      = 3
+         * CRITICAL  = 4
+         */
+
+        const riskValues =
+            readings.map(row => {
+
+                const risk =
+                    String(
+                        row.risk_level || ""
+                    ).toUpperCase();
+
+                if (risk.includes("CRITICAL")) {
+                    return 4;
+                }
+
+                if (risk.includes("HIGH")) {
+                    return 3;
+                }
+
+                if (risk.includes("MODERATE")) {
+                    return 2;
+                }
+
+                return 1;
+
+            });
+
+        /*
+         * Risk colors:
+         *
+         * LOW       = green
+         * MODERATE  = orange
+         * HIGH      = red
+         * CRITICAL  = dark red
+         */
+
+        const riskColors =
+            readings.map(row => {
+
+                const risk =
+                    String(
+                        row.risk_level || ""
+                    ).toUpperCase();
+
+                if (risk.includes("CRITICAL")) {
+                    return "#991b1b";
+                }
+
+                if (risk.includes("HIGH")) {
+                    return "#dc2626";
+                }
+
+                if (risk.includes("MODERATE")) {
+                    return "#f97316";
+                }
+
+                return "#16a34a";
+
+            });
+
+        const canvas =
+            document.getElementById(
+                "riskChart"
+            );
+
+        if (!canvas) {
+
+            console.warn(
+                "riskChart canvas not found."
+            );
+
+            return;
+
+        }
+
+        const ctx =
+            canvas.getContext("2d");
+
+        /*
+         * Create chart only once.
+         */
+
+        if (!riskChart) {
+
+            riskChart =
+                new Chart(ctx, {
+
+                    type: "line",
+
+                    data: {
+
+                        labels: labels,
+
+                        datasets: [
+
+                            {
+
+                                label:
+                                    "Deterioration Risk",
+
+                                data:
+                                    riskValues,
+
+                                borderWidth: 4,
+
+                                tension: 0,
+
+                                stepped: true,
+
+                                fill: false,
+
+                                pointRadius: 7,
+
+                                pointHoverRadius: 9,
+
+                                pointBackgroundColor:
+                                    riskColors,
+
+                                pointBorderColor:
+                                    riskColors,
+
+                                pointBorderWidth: 3,
+
+                                /*
+                                 * Color each line segment
+                                 * according to risk level.
+                                 */
+
+                                segment: {
+                                    borderColor: function(context) {
+                                        const index = context.p0DataIndex;
+                                        return riskColors[index] || "#16a34a";
+                                    }
+                                }
+
+                            }
+
+                        ]
+
+                    },
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        animation: false,
+
+                        scales: {
+
+                            x: {
+
+                                title: {
+
+                                    display: true,
+
+                                    text: "Time"
+
+                                }
+
+                            },
+
+                            y: {
+
+                                min: 1,
+
+                                max: 4,
+
+                                ticks: {
+
+                                    stepSize: 1,
+
+                                    callback:
+                                        function(value) {
+
+                                            const levels = {
+
+                                                1: "LOW",
+
+                                                2: "MODERATE",
+
+                                                3: "HIGH",
+
+                                                4: "CRITICAL"
+
+                                            };
+
+                                            return (
+                                                levels[value] || ""
+                                            );
+
+                                        }
+
+                                },
+
+                                title: {
+
+                                    display: true,
+
+                                    text: "Risk Level"
+
+                                }
+
+                            }
+
+                        },
+
+                        plugins: {
+
+                            legend: {
+
+                                display: true
+
+                            }
+
+                        }
+
+                    }
+
+                });
+
+        }
+
+        /*
+         * Update existing chart.
+         */
+
+        else {
+
+            riskChart.data.labels =
+                labels;
+
+            riskChart.data.datasets[0].data =
+                riskValues;
+
+            riskChart.data.datasets[0]
+                .pointBackgroundColor =
+                riskColors;
+
+            riskChart.data.datasets[0]
+                .pointBorderColor =
+                riskColors;
+
+            riskChart.data.datasets[0]
+                .segment.borderColor =
+                function(context) {
+
+                    const index =
+                        context.p0DataIndex;
+
+                    return (
+                        riskColors[index]
+                        || "#16a34a"
+                    );
+
+                };
+
+            riskChart.update("none");
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error loading risk chart:",
+            error
+        );
+
+    }
+
+}
+/* =========================================================
+   RISK SUMMARY
+========================================================= */
+
+async function loadRiskSummary() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/predictions?t=" + Date.now()
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Prediction API returned " +
+                response.status
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        if (!Array.isArray(data) ||
+            data.length === 0) {
+
+            return;
+
+        }
+
+        let low = 0;
+        let moderate = 0;
+        let high = 0;
+        let critical = 0;
+
+        data.forEach(row => {
+
+            const risk =
+                String(
+                    row.risk_level || ""
+                ).toUpperCase();
+
+            if (risk.includes("CRITICAL")) {
+
+                critical++;
+
+            }
+
+            else if (risk.includes("HIGH")) {
+
+                high++;
+
+            }
+
+            else if (risk.includes("MODERATE")) {
+
+                moderate++;
+
+            }
+
+            else {
+
+                low++;
+
+            }
+
+        });
+
+        /* Update counts */
+
+        document.getElementById(
+            "lowCount"
+        ).textContent = low;
+
+        document.getElementById(
+            "moderateCount"
+        ).textContent = moderate;
+
+        document.getElementById(
+            "highCount"
+        ).textContent = high;
+
+        document.getElementById(
+            "criticalCount"
+        ).textContent = critical;
+
+        /*
+         * Determine highest risk.
+         */
+
+        let highestRisk = "LOW";
+
+        if (critical > 0) {
+
+            highestRisk = "CRITICAL";
+
+        }
+
+        else if (high > 0) {
+
+            highestRisk = "HIGH";
+
+        }
+
+        else if (moderate > 0) {
+
+            highestRisk = "MODERATE";
+
+        }
+
+        /*
+         * Current risk is the newest
+         * prediction returned by the API.
+         */
+
+        const currentRisk =
+            String(
+                data[0].risk_level || "--"
+            );
+
+        document.getElementById(
+            "highestRisk"
+        ).textContent =
+            highestRisk;
+
+        document.getElementById(
+            "currentRisk"
+        ).textContent =
+            currentRisk;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error loading risk summary:",
+            error
+        );
+
+    }
+
+}
+/* =========================================================
+   REFRESH ENTIRE DASHBOARD
+========================================================= */
+
+function refreshDashboard() {
+
+    loadLatestData();
+
+    loadHistory();
+
+    loadAlerts();
+
+    loadVitalChart();
+
+    loadRiskChart();
+
+    loadRiskSummary();
+
+}
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+refreshDashboard();
+
+/* =========================================================
+   AUTO REFRESH EVERY 3 SECONDS
+========================================================= */
+
+setInterval(
+    refreshDashboard,
+    3000
+);
+
+</script>
+
+</body>
+
+</html>
